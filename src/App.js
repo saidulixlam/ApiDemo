@@ -6,19 +6,18 @@ function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const [cancelRetry, setCancelRetry] = useState(false);
-
-  const API_URL = 'https://swapi.dev/api/films/';
+  // const [retryCount, setRetryCount] = useState(0);
+  // const [cancelRetry, setCancelRetry] = useState(false);
 
   const fetchMovies=useCallback(async ()=> {
     setIsLoading(true);
     setError(null);
 
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch('https://swapi.dev/api/films/');
 
       if (!res.ok) {
+        console.log('error ocured');
         throw new Error('Something went wrong.... Retrying');
       }
 
@@ -37,33 +36,35 @@ function App() {
       setError(error.message);
 
       // Retry logic with a delay of 5 seconds if cancelRetry is false
-      if (!isLoading && !cancelRetry && retryCount < 3) {
-        setRetryCount(retryCount + 1);
-        setTimeout(fetchMovies, 5000); // Retry after 5 seconds
-      } else {
-        setIsLoading(false);
-      }
+      // if (!isLoading && !cancelRetry && retryCount < 3) {
+      //   setRetryCount(retryCount + 1);
+      //   setTimeout(fetchMovies, 1000); // Retry after 5 seconds
+      // } else {
+      //   setIsLoading(false);
+      // }
+      setIsLoading(false);
     }
-  },[cancelRetry]);
+  },[]);
 
   useEffect(() => {
     // Call the function initially when the component mounts
     fetchMovies();
   }, [fetchMovies]);
 
-  const handleCancelRetry = () => {
-    setCancelRetry(true);
-    setIsLoading(false);
-  };
+  // const handleCancelRetry = () => {
+  //   setCancelRetry(true);
+  //   
+  // };
 
   return (
     <React.Fragment>
       <section>
         <button onClick={fetchMovies}>Fetch Movies</button>
-        <button onClick={handleCancelRetry}>Cancel Retry</button>
+        
       </section>
       <section>
         {!isLoading && <MoviesList movies={movies} />}
+        {/* {!isLoading && movies.length===0 && <p>Found no movies</p>} */}
         {isLoading && <h1>Loading..............</h1>}
         {!isLoading && error && <h4>{error}</h4>}
       </section>
